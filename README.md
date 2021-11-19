@@ -1,0 +1,2 @@
+# libsdses
+SDSES JNA Library
