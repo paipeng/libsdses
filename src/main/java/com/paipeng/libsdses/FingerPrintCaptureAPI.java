@@ -6,8 +6,8 @@ import com.sun.jna.win32.StdCallLibrary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FingerPrintAPI {
-    public static Logger logger = LoggerFactory.getLogger(FingerPrintAPI.class);
+public class FingerPrintCaptureAPI {
+    public static Logger logger = LoggerFactory.getLogger(FingerPrintCaptureAPI.class);
     private static final String LIB_NAME = "xxxxx";
 
     private static void setupNativeLibrary() {
@@ -126,6 +126,32 @@ public class FingerPrintAPI {
          * @return
          */
         int LIVESCAN_GetDesc(byte[] pszDesc);
+
+        /**
+         * 取得采集接口错误信息
+         * @param nErrorNo byte data [256]
+         * @return
+         */
+        int LIVESCAN_GetErrorInfo(int nErrorNo, byte[] pszErrorInfo);
+    }
+
+    public enum LIVESCAN_CAPTURE_ERROR {
+        INVALID_PARAMETER(-1),
+        MEMORY_INSUFFICIENT(-2),
+        FUNCTION_ERROR(-3),
+        DEVICE_UNAVAILABLE(-4),
+        DEVICE_UNINITIALIZED(-5),
+        ERROR_CODE_INVALID(-6),
+        LICENSE_INVALID(-7),
+        SYSTEM_ERRORS(-8),
+        USER_DEFINE_ERRORS(-101);
+
+        public int key;
+
+        LIVESCAN_CAPTURE_ERROR(int key) {
+            this.key = key;
+        }
+
     }
 
 }
