@@ -18,20 +18,20 @@ public class FingerPrintCaptureAPI {
     }
 
     //Load DLL Library
-    public interface FingerPrintLib extends StdCallLibrary {
-        FingerPrintLib INSTANCE = Native.load(LIB_NAME, FingerPrintLib.class);
+    public interface FingerPrintCaptureLib extends StdCallLibrary {
+        FingerPrintCaptureLib INSTANCE = Native.load(LIB_NAME, FingerPrintCaptureLib.class);
 
         // 遵循GA/T 626.1—2010中3.1规定
 
         /**
          * 初始化采集设备
-         * @return 调用成功，返回1；< 0 返回错误代码
+         * @return 调用成功，返回 1；< 0 返回错误代码
          */
         int LIVESCAN_Init();
 
         /**
          * 释放采集设备
-         * @return 调用成功，返回1；< 0 返回错误代码
+         * @return 调用成功，返回 1；< 0 返回错误代码
          */
         int LIVESCAN_Close();
 
@@ -45,7 +45,7 @@ public class FingerPrintCaptureAPI {
          * 设置采集设备当前的亮度
          * @param nChannel 通道号
          * @param nBright
-         * @return
+         * @return 调用成功，返回 1；< 0 返回错误代码
          */
         int LIVESCAN_SetBright(int nChannel, int nBright);
 
@@ -53,7 +53,7 @@ public class FingerPrintCaptureAPI {
          * 设置采集设备当前的对比度
          * @param nChannel 通道号
          * @param nContrast
-         * @return
+         * @return 调用成功，返回 1；< 0 返回错误代码
          */
         int LIVESCAN_SetContrast(int nChannel, int nContrast);
 
@@ -61,7 +61,7 @@ public class FingerPrintCaptureAPI {
          * 获得采集设备当前的亮度
          * @param nChannel 通道号
          * @param pnBright
-         * @return
+         * @return 调用成功，返回 1；< 0 返回错误代码
          */
         int LIVESCAN_GetBright(int nChannel, int[] pnBright);
 
@@ -69,22 +69,54 @@ public class FingerPrintCaptureAPI {
          * 获得采集设备当前的对比度
          * @param nChannel 通道号
          * @param pnContrast
-         * @return
+         * @return 调用成功，返回 1；< 0 返回错误代码
          */
         int LIVESCAN_GetContrast(int nChannel, int[] pnContrast);
 
         /**
+         * 获得采集设备图像的宽度，高度最大值
+         * @param nChannel 通道号
+         * @param pnWidth 存放图像宽度的整数型指针
+         * @param pnHeight 存放图像高度的整数型指针
+         * @return 调用成功，返回 1；< 0 返回错误代码
+         */
+        int LIVESCAN_GetMaxImageSize(int nChannel, int[] pnWidth, int[] pnHeight);
+
+        /**
          * 调用采集设备的属性设置对话框
-         * @return
+         * @return 调用成功，返回 1；< 0 返回错误代码
          */
         int LIVESCAN_Setup();
 
         // int  LIVESCAN_ SetVideoWindow (HWND hWnd);
 
         /**
+         * 获得当前图像的采集位置，宽度和高度
+         * @param nChannel 通道号
+         * @param pnOriginX 存放图像采集窗口的采集原点坐标X值的整数型指针
+         * @param pnOriginY 存放图像采集窗口的采集原点坐标Y值的整数型指针
+         * @param pnWidth 存放图像采宽度的整数型指针
+         * @param pnHeight 存放图像采高度的整数型指针
+         * @return 调用成功，返回 1；< 0 返回错误代码
+         */
+        int LIVESCAN_GetCaptWindow(int nChannel, int[] pnOriginX, int[] pnOriginY, int[] pnWidth, int[] pnHeight);
+
+        /**
+         * 设置当前图像的采集位置，宽度和高度
+         * @param nChannel 通道号
+         * @param nOriginX 图像采集窗口的采集原点坐标X值。
+         * @param nOriginY 图像采集窗口的采集原点坐标Y值。
+         * @param nWidth 图像宽度。对于单指指纹采集器，值应该为640。对于平面右手四连指
+         * @param nHeight
+         * @return 调用成功，返回 1；< 0 返回错误代码
+         */
+        int LIVESCAN_SetCaptWindow(int nChannel, int nOriginX, int nOriginY, int nWidth, int nHeight);
+
+
+        /**
          * 准备采集一帧图像
          * @param nChannel 通道号
-         * @return
+         * @return 调用成功，返回 1；< 0 返回错误代码
          */
         int LIVESCAN_BeginCaptutre(int nChannel);
 
@@ -92,7 +124,7 @@ public class FingerPrintCaptureAPI {
          * 采集一帧图像
          * @param nChannel 通道号
          * @param pRawData 内存块大小为单指指纹采集图像大小。
-         * @return
+         * @return 调用成功，返回 1；< 0 返回错误代码
          */
         int LIVESCAN_GetFPRawData(int nChannel, byte[] pRawData);
 
@@ -110,9 +142,52 @@ public class FingerPrintCaptureAPI {
         /**
          * 结束采集一帧图像
          * @param nChannel 通道号
-         * @return
+         * @return 调用成功，返回 1；< 0 返回错误代码
          */
         int LIVESCAN_EndCapture(int nChannel);
+
+        /**
+         * 判断采集设备是否支持采集窗口设置
+         * @param nChannel 通道号
+         * @return 若采集接口只支持单指指纹采集窗口的设置，则返回 1；
+         * 若采集接口只支持平面右手四连指，平面左手四连指或者平面左右手拇指指纹采集窗口的设置，则返回 2；
+         * 若采集接口支持单指，平面右手四连指，平面左手四连指或者平面左右受拇指指纹采集窗口的设置，则返回 3；
+         * 若采集接口不支持设置采集窗口，则返回 0。
+         * < 0 返回错误代码
+         */
+        int LIVESCAN_IsSupportCaptWindow(int nChannel);
+
+
+        /**
+         * 采集设备是否支持设置对话框
+         * @return 若采集接口支持LIVESCAN_Setup，则返回 1，否则返回 0
+         */
+        int LIVESCAN_IsSupportSetup();
+
+        /**
+         * 获取预览图像大小
+         * @param nChannel 通道号
+         * @param pnWidth 存放预览图像宽度的整形指针
+         * @param pnHeight 存放预览图像高度的整形指针
+         * @return 调用成功，返回 1；< 0 返回错误代码
+         */
+        int LIVESCAN_GetPreviewImageSize(int nChannel, int[] pnWidth, int[] pnHeight);
+
+        /**
+         * 采集一帧预览图像
+         * @param nChannel 通道号
+         * @param pRawData 指向存放采集的预览图像数据的内存块，调用者分配。
+         * @return 调用成功，返回 1；< 0 返回错误代码
+         */
+        int LIVESCAN_GetPreviewData(int nChannel, byte[] pRawData);
+
+        /**
+         * 判断采集设备是否支持采集预览图像
+         * @return 支持，返回 1；否则 返回 0
+         */
+        int LIVESCAN_IsSupportPreview();
+
+
 
         /**
          * 取得接口的版本
@@ -133,6 +208,9 @@ public class FingerPrintCaptureAPI {
          * @return
          */
         int LIVESCAN_GetErrorInfo(int nErrorNo, byte[] pszErrorInfo);
+
+
+
     }
 
     public enum LIVESCAN_CAPTURE_ERROR {
